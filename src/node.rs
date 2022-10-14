@@ -11,3 +11,17 @@ pub(crate) struct Node {
     // Only `None` for root node
     parent: Option<usize>,
 }
+
+impl Node {
+    pub(super) fn new(hash: Hash, parent: Option<usize>) -> Self {
+        Self { hash, parent }
+    }
+
+    pub(super) fn get_hash(&self) -> &Hash {
+        &self.hash
+    }
+
+    pub(super) fn set_parent(&mut self, parent: usize) {
+        self.parent = Some(parent);
+    }
+}

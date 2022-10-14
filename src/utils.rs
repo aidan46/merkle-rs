@@ -9,3 +9,21 @@ pub(crate) fn hash_concat(h1: &Hash, h2: &Hash) -> Hash {
     let h3 = h1.iter().chain(h2).copied().collect();
     hash_data(&h3)
 }
+
+pub(crate) fn log2(n: usize) -> usize {
+    n.trailing_zeros() as usize
+}
+
+#[cfg(test)]
+mod tests {
+    use super::log2;
+
+    #[test]
+    fn test_log2() {
+        assert_eq!(log2(1), 0);
+        assert_eq!(log2(2), 1);
+        assert_eq!(log2(4), 2);
+        assert_eq!(log2(8), 3);
+        assert_eq!(log2(16), 4);
+    }
+}
