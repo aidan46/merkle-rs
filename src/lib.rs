@@ -1,7 +1,7 @@
 use crate::{
     node::Node,
-    proof::Proof,
-    utils::{hash_concat, hash_data, log2},
+    proof::{HashDirection, Proof},
+    utils::{hash_concat, hash_data, is_even, log2},
 };
 
 mod node;
@@ -22,11 +22,6 @@ pub struct MerkleTree {
 }
 
 impl MerkleTree {
-    /// Gets root hash for this tree
-    pub fn root(&self) -> Hash {
-        self.root.clone()
-    }
-
     /// Constructs a Merkle tree from given input data
     /// # Panics
     /// We assume that the length of the input is a power of 2 (perfect binary tree)
@@ -59,19 +54,59 @@ impl MerkleTree {
         Self { data, depth, root }
     }
 
+    /// Returns a list of hashes that can be used to prove that the given data is in this tree
+    pub fn prove(&self, data: &Data) -> Option<Proof> {
+        let hash = hash_data(data);
+        // Ensure that the hash is present and get index
+        let mut index = match self.data.iter().position(|node| *node.get_hash() == hash) {
+            Some(i) => i,
+            None => return None,
+        };
+        let mut path = vec![];
+
+        // Loop up to root of `MerkleTree`
+        for _ in 0..self.depth {
+            let (direction, node) = if is_even(index) {
+                // `unwrap()`'s are safe cause the index has been checked
+                (HashDirection::Right, self.read_at(index + 1).unwrap())
+            } else {
+                (HashDirection::Left, self.read_at(index - 1).unwrap())
+            };
+
+            path.push((direction, node.get_hash()));
+            // The `unwrap()` of the parent index is safe because
+            // we stop before getting to the row where the root is
+            index = node.get_parent().unwrap();
+        }
+
+        Some(Proof::new(path))
+    }
+
+    /// Gets root hash for this tree
+    pub fn root(&self) -> Hash {
+        self.root.clone()
+    }
+
     /// Verifies that the given input data produces the given root hash
     pub fn verify(input: &[Data], root_hash: &Hash) -> bool {
         &MerkleTree::construct(input).root() == root_hash
     }
 
-    /// Verifies that the given data and proof_path correctly produce the given root_hash
+    /// Verifies that the given data and `proof_path` correctly produce the given `root_hash`
     pub fn verify_proof(data: &Data, proof: &Proof, root_hash: &Hash) -> bool {
-        todo!("Exercise 2")
-    }
+        let mut hash = hash_data(data);
 
-    /// Returns a list of hashes that can be used to prove that the given data is in this tree
-    pub fn prove(&self, data: &Data) -> Option<Proof> {
-        todo!("Exercise 3")
+        // If direction is left hash = h1
+        // If direction is right hash = h2
+        // Iterate over proof until we get to the root hash
+        proof.path().iter().for_each(|(d, h)| {
+            hash = match d {
+                HashDirection::Left => hash_concat(h, &hash),
+                HashDirection::Right => hash_concat(&hash, h),
+            };
+        });
+
+        hash == *root_hash
     }
 
     fn create_parent(data: &mut [Node], i: usize) -> Node {
@@ -82,6 +117,10 @@ impl MerkleTree {
         data[i].set_parent(parent);
         data[i + 1].set_parent(parent);
         Node::new(hash, None)
+    }
+
+    fn read_at(&self, index: usize) -> Option<&Node> {
+        self.data.get(index)
     }
 }
 
@@ -118,5 +157,16 @@ mod tests {
         let expected_root = "0727b310f87099c1ba2ec0ba408def82c308237c8577f0bdfd2643e9cc6b7578";
         assert!(MerkleTree::verify(&data, &root));
         assert_eq!(hex::encode(root), expected_root);
+    }
+
+    #[test]
+    fn test_proof() {
+        let input = example_data(128);
+        let tree = MerkleTree::construct(&input);
+        let data = &vec![1];
+        let proof = tree.prove(data);
+        assert!(proof.is_some());
+        let res = MerkleTree::verify_proof(data, &proof.unwrap(), &tree.root());
+        assert!(res);
     }
 }

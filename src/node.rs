@@ -21,6 +21,10 @@ impl Node {
         &self.hash
     }
 
+    pub(super) fn get_parent(&self) -> Option<usize> {
+        self.parent
+    }
+
     pub(super) fn set_parent(&mut self, parent: usize) {
         self.parent = Some(parent);
     }

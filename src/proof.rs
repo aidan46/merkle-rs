@@ -12,6 +12,16 @@ pub struct Proof<'a> {
     path: Vec<(HashDirection, &'a Hash)>,
 }
 
+impl<'a> Proof<'a> {
+    pub(crate) fn new(path: Vec<(HashDirection, &'a Hash)>) -> Self {
+        Self { path }
+    }
+
+    pub(crate) fn path(&self) -> &[(HashDirection, &'a Hash)] {
+        &self.path
+    }
+}
+
 /// Which side to put Hash on when concatenating proof hashes
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum HashDirection {

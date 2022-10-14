@@ -14,6 +14,10 @@ pub(crate) fn log2(n: usize) -> usize {
     n.trailing_zeros() as usize
 }
 
+pub(crate) fn is_even(n: usize) -> bool {
+    n % 2 == 0
+}
+
 #[cfg(test)]
 mod tests {
     use super::log2;
