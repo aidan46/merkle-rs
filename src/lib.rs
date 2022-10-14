@@ -61,7 +61,7 @@ impl MerkleTree {
 
     /// Verifies that the given input data produces the given root hash
     pub fn verify(input: &[Data], root_hash: &Hash) -> bool {
-        todo!("Exercise 1b")
+        &MerkleTree::construct(input).root() == root_hash
     }
 
     /// Verifies that the given data and proof_path correctly produce the given root_hash
@@ -87,7 +87,7 @@ impl MerkleTree {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{Data, MerkleTree};
 
     fn example_data(n: usize) -> Vec<Data> {
         let mut data = vec![];
@@ -108,5 +108,15 @@ mod tests {
         let tree = MerkleTree::construct(&data);
         let expected_root = "0727b310f87099c1ba2ec0ba408def82c308237c8577f0bdfd2643e9cc6b7578";
         assert_eq!(hex::encode(tree.root()), expected_root);
+    }
+
+    #[test]
+    fn test_verify_root() {
+        let data = example_data(8);
+        let tree = MerkleTree::construct(&data);
+        let root = tree.root();
+        let expected_root = "0727b310f87099c1ba2ec0ba408def82c308237c8577f0bdfd2643e9cc6b7578";
+        assert!(MerkleTree::verify(&data, &root));
+        assert_eq!(hex::encode(root), expected_root);
     }
 }
