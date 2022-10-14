@@ -1,3 +1,4 @@
+//! MerklTree abstraction and implementations.
 use crate::{
     node::Node,
     proof::{HashDirection, Proof},
@@ -142,11 +143,21 @@ mod tests {
         let tree = MerkleTree::construct(&data);
         let expected_root = "9675e04b4ba9dc81b06e81731e2d21caa2c95557a85dcfa3fff70c9ff0f30b2e";
         assert_eq!(hex::encode(tree.root()), expected_root);
+        assert_eq!(tree.depth, 2);
 
         let data = example_data(8);
         let tree = MerkleTree::construct(&data);
         let expected_root = "0727b310f87099c1ba2ec0ba408def82c308237c8577f0bdfd2643e9cc6b7578";
         assert_eq!(hex::encode(tree.root()), expected_root);
+        let depth = tree.depth;
+        assert_eq!(depth, 3);
+
+        let data = example_data(16);
+        let tree = MerkleTree::construct(&data);
+        let depth = tree.depth;
+        let expected_root = "c0c3fe0b145addf71ab16a54fe056bd17d2b5f4b913d11e07220e604f108a9e1";
+        assert_eq!(hex::encode(tree.root()), expected_root);
+        assert_eq!(depth, 4);
     }
 
     #[test]
