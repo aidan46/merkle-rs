@@ -1,6 +1,29 @@
 # 🌲 Merkle-rs
 A simple implementation of a Merkle Tree
 
+## Usage
+```rust
+use merkle_rs::{Data, MerkleTree};
+
+fn example_data(n: usize) -> Vec<Data> {
+    let mut data = vec![];
+    for i in 0..n {
+        data.push(vec![i as u8]);
+    }
+    data
+}
+
+fn main() {
+    let data = example_data(16);
+    let tree = MerkleTree::construct(&data);
+    if let Some(proof) = tree.prove(&vec![2]) {
+        for step in proof.path() {
+            println!("Direction: {:?} Hash: {}", step.0, hex::encode(step.1));
+        }
+    }
+}
+```
+
 ## Details
 A merkle tree is a data structure used for data verification and synchronization.
 It is a tree data structure where each non-leaf node is a hash of it’s child nodes.

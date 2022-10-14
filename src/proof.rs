@@ -17,7 +17,7 @@ impl<'a> Proof<'a> {
         Self { path }
     }
 
-    pub(crate) fn path(&self) -> &[(HashDirection, &'a Hash)] {
+    pub fn path(&self) -> &[(HashDirection, &'a Hash)] {
         &self.path
     }
 }
