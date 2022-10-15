@@ -55,7 +55,7 @@ impl MerkleTree {
             width >>= 1;
         }
 
-        let root = data[len - 1].get_hash().clone();
+        let root = data.last().unwrap().get_hash().clone();
         Self { data, depth, root }
     }
 
