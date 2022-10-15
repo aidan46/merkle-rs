@@ -33,7 +33,7 @@ impl MerkleTree {
         // because input_len = 2^x, total_len = 2^(x + 1) - 1
         assert!(input.len().is_power_of_two());
         assert!(input.len() <= (usize::MAX >> 1));
-        let len = input.len().next_power_of_two();
+        let len = (input.len() + 1).next_power_of_two() - 1;
         let mut data = Vec::with_capacity(len);
         // Insert all the hashed leaf nodes
         input
@@ -55,7 +55,7 @@ impl MerkleTree {
             width >>= 1;
         }
 
-        let root = data[data.len() - 1].get_hash().clone();
+        let root = data[len - 1].get_hash().clone();
         Self { data, depth, root }
     }
 
