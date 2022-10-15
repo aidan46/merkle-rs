@@ -27,13 +27,37 @@ fn main() {
 ## Details
 A merkle tree is a data structure used for data verification and synchronization.
 It is a tree data structure where each non-leaf node is a hash of it’s child nodes.
-All the leaf nodes are at the same depth and are as far left as possible.
-![MerkleTree](https://miro.medium.com/max/1200/0*jY57ovz5FRz05Svg.png)
-
+All the leaf nodes are at the same depth and are as far left as possible. 
+In this implementation the leaf nodes are all on the same level because the input is assumed to be a perfect power of 2.
 Internally the tree is stored in a vector of nodes where each node is aware of their parent.
 Max length of the input for the tree is `usize::MAX >> 1` because:
 ```text
 input_len = 2^x, total_len = 2^(x + 1) - 1
+```
+Example input:
+```text
+D = [A1, A2, A3, A4]
+```
+Example output:
+```text
+                               Root
+                           ┌──────────┐
+                           │    H7    │
+                           │ H(H5|H6) │
+                  ┌────────┴──────────┴──────────┐
+                  │                              │
+                  │                              │
+             ┌────┴─────┐                  ┌─────┴────┐
+             │    H5    │                  │    H6    │
+             │ H(H1|H2) │                  │ H(H3|H4) │
+             └─┬─────┬──┘                  └─┬──────┬─┘
+               │     │                       │      │
+     ┌─────────┴┐   ┌┴─────────┐    ┌────────┴─┐  ┌─┴────────┐
+     │   H1     │   │    H2    │    │    H3    │  │    H4    │
+     │  H(A1)   │   │   H(A2)  │    │   H(A3)  │  │   H(A4)  │
+     └───┬──────┘   └────┬─────┘    └────┬─────┘  └────┬─────┘
+         │               │               │             │
+         A1              A2              A3            A4
 ```
 
 ### MerkleTree
