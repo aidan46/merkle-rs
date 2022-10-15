@@ -29,12 +29,16 @@ impl MerkleTree {
     /// so we assert in the beginning that this is true
     pub fn construct(input: &[Data]) -> MerkleTree {
         // Assert because assumption is made that input is a perfect binary tree
+        // Max length of input is usize::MAX >> 1
+        // because input_len = 2^x, total_len = 2^(x + 1) - 1
         assert!(input.len().is_power_of_two());
-        // Create all the hashed leaf nodes
-        let mut data: Vec<Node> = input
+        assert!(input.len() <= (usize::MAX >> 1));
+        let len = input.len().next_power_of_two();
+        let mut data = Vec::with_capacity(len);
+        // Insert all the hashed leaf nodes
+        input
             .iter()
-            .map(|x| Node::new(hash_data(x), None))
-            .collect();
+            .for_each(|x| data.push(Node::new(hash_data(x), None)));
         let mut width = input.len();
         let depth = log2(width);
 
@@ -135,6 +139,13 @@ mod tests {
             data.push(vec![i as u8]);
         }
         data
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_input_length() {
+        let data = example_data(3);
+        MerkleTree::construct(&data);
     }
 
     #[test]
