@@ -30,6 +30,12 @@ It is a tree data structure where each non-leaf node is a hash of it’s child n
 All the leaf nodes are at the same depth and are as far left as possible.
 ![MerkleTree](https://miro.medium.com/max/1200/0*jY57ovz5FRz05Svg.png)
 
+Internally the tree is stored in a vector of nodes where each node is aware of their parent.
+Max length of the input for the tree is `usize::MAX >> 1` because:
+```text
+input_len = 2^x, total_len = 2^(x + 1) - 1
+```
+
 ### MerkleTree
 ```rust
 struct MerkleTree {
@@ -75,3 +81,8 @@ enum HashDirection {
 }
 ```
 The `Proof` is a list to get from the given data to the root hash. The first element of the tuple is which side the hash should be on when concatenating. The second element is a reference to the hashed value of the current node.
+
+## Future improvements
+- Make the input data generic.
+- Support input lengths that are not a perfect power of 2.
+- Support for different hashing algorithms.
