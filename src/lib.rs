@@ -142,13 +142,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
-    fn test_input_length() {
-        let data = example_data(3);
-        MerkleTree::construct(&data);
-    }
-
-    #[test]
     fn test_constructions() {
         let data = example_data(4);
         let tree = MerkleTree::construct(&data);
